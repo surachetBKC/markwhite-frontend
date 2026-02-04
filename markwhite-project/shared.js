@@ -9,7 +9,7 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyBYTRyiJuhYNYmmjRoCH0fvCUFgkVhpc6Y";
 const VAPID_PUBLIC_KEY = "BCNpvarbRgcqB_Lb4YCHz_G2_6ugFzZA5d9tgxXkBzGeyvFiopKQPWAN8rINW7euFbBvEpPMyWn2skFErFCvLH4";
 
 function getApiBaseUrl() { return '/api'; }
-const API_BASE_URL = "https://markwhite.bkc.co.th";
+const API_BASE_URL = "markwhite-api.surachet-si.workers.dev";
 console.log("🔗 API Connected to:", API_URL);
 
 // *** LANGUAGE SETTINGS ***
@@ -222,3 +222,4 @@ window.changeLanguage = function(lang) {
     }
 
 })();
+
