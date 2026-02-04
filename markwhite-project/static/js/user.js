@@ -541,32 +541,57 @@ window.enablePushNotifications = async function() {
 // ==========================================
 // 6. DEEP LINK (UPDATED - FIX ZOMBIE LOADING)
 // ==========================================
-window.checkDeepLink = function() {
+window.checkDeepLink = async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const reportId = urlParams.get('id');
 
-    if (reportId) {
-        console.log("🔗 Deep Link Found: ID =", reportId);
+    if (!reportId) return; // ถ้าไม่มี ID ก็จบการทำงาน
 
-        // 1. ขึ้น Loading ทันที เพื่อบอก User ว่ากำลังทำงาน
-        if(typeof showLoading === 'function') showLoading(true, "Opening Report...");
+    console.log("🔗 Deep Link Found: ID =", reportId);
 
-        // 2. หน่วงเวลาเล็กน้อย (ตาม code เดิมของคุณ 800ms) เพื่อให้ระบบพร้อม
-        setTimeout(() => {
-            if (STATE.user) {
-                // เรียกฟังก์ชันเปิดหน้า Detail
-                if (typeof openHistoryDetail === 'function') {
-                    openHistoryDetail(reportId);
-                }
+    // 1. เปิด Loading
+    if(typeof showLoading === 'function') showLoading(true, "Opening Report...");
 
-                // ล้าง URL เพื่อไม่ให้ Refresh แล้วกลับมาหน้าเดิม
-                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
-            }
+    try {
+        // --- STEP A: รอให้แน่ใจว่า App พร้อม (User Login เสร็จ) ---
+        // วนลูปเช็คทุก 500ms (สูงสุด 10 ครั้ง = 5 วินาที) เผื่อเน็ตช้า
+        let attempts = 0;
+        while (!STATE.user && attempts < 10) {
+            await new Promise(r => setTimeout(r, 500));
+            attempts++;
+            console.log("⏳ Waiting for user login...", attempts);
+        }
 
-            // 3. ปิด Loading เมื่อเสร็จ
-            if(typeof showLoading === 'function') showLoading(false);
-        }, 800);
+        // ถ้าครบ 5 วิ แล้วยังไม่มี User แสดงว่า Login ไม่ผ่าน หรือเน็ตหลุด
+        if (!STATE.user) {
+            // [Option] บันทึก ID ไว้ใน SessionStorage เพื่อเปิดทีหลังเมื่อ Login สำเร็จ
+            sessionStorage.setItem('pending_report_id', reportId);
+            throw new Error("User not logged in yet. Saved for later.");
+        }
+
+        // --- STEP B: เปิดรายงาน ---
+        if (typeof openHistoryDetail === 'function') {
+            // ใส่ await เผื่อในอนาคต openHistoryDetail เป็น async function
+            await openHistoryDetail(reportId); 
+        } else {
+            throw new Error("Function openHistoryDetail not found");
+        }
+
+        // --- STEP C: ล้าง URL (ทำเมื่อสำเร็จเท่านั้น) ---
+        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
+
+    } catch (error) {
+        console.warn("⚠️ Deep Link Warning:", error.message);
+        // ไม่ต้อง Alert Error ใส่ User ถ้าเป็นแค่เรื่อง Login ช้า
+        // แต่ถ้าเปิดรายงานไม่ได้จริงๆ ค่อย Alert
+        if (STATE.user) {
+             alert("ไม่สามารถเปิดรายงานได้: " + error.message);
+        }
+    } finally {
+        // --- STEP D: ปิด Loading เสมอ (สำคัญที่สุด แก้หน้าขาว) ---
+        // ไม่ว่าจะ Success หรือ Error บรรทัดนี้จะทำงานแน่นอน
+        if(typeof showLoading === 'function') showLoading(false);
     }
 };
 
@@ -4933,3 +4958,4 @@ function getCookie(name) {
 loadGoogleMapsScript();
 loadConfig();
 render();
+
