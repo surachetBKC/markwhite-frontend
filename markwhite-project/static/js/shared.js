@@ -2,7 +2,7 @@
 // *** SHARED CONFIGURATION & API KEYS ***
 // ==========================================
 
-const API_BASE_URL = "markwhite-api.surachet-si.workers.dev";
+const API_URL = "markwhite-api.surachet-si.workers.dev";
 console.log("🔗 API Connected to:", API_URL);
 
 // Google Maps Key
@@ -221,5 +221,6 @@ window.changeLanguage = function(lang) {
     }
 
 })();
+
 
 
