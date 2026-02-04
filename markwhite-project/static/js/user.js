@@ -867,16 +867,29 @@ function checkAutoLogin() {
 checkAutoLogin();
 
 async function loadUserProfile() {
-    // เช็คความปลอดภัย
+    // 1. เช็คความปลอดภัย
     if (!STATE.user) return;
 
     // ใช้ employee_code เป็นหลัก (ถ้าไม่มีให้ใช้ userid)
     const idToFetch = STATE.user.employee_code || STATE.user.userid;
+    const targetUrl = `${API_URL}/user-profile/${idToFetch}`;
 
-    console.log("📥 Loading Profile for:", idToFetch);
+    console.log("📥 Loading Profile form:", targetUrl);
 
     try {
-        const res = await fetch(`${API_URL}/user-profile/${idToFetch}`);
+        const res = await fetch(targetUrl);
+
+        // --- 🛡️ DEFENSIVE CODE: ป้องกัน Error <!DOCTYPE... ---
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            // ถ้า Server ส่ง HTML กลับมา แสดงว่า URL ผิด
+            const text = await res.text();
+            console.error("🔥 API Error: Server returned HTML instead of JSON. Check API_URL in shared.js");
+            console.error("Preview:", text.substring(0, 50) + "...");
+            return; // หยุดทำงาน ไม่ฝืนแปลงเป็น JSON
+        }
+        // -----------------------------------------------------
+
         if (res.ok) {
             const data = await res.json();
 
@@ -888,7 +901,11 @@ async function loadUserProfile() {
 
             // Apply Language (ถ้ามีการตั้งค่าภาษาไว้)
             if (STATE.userSettings.language && STATE.userSettings.language !== STATE.language) {
-                changeLanguage(STATE.userSettings.language);
+                // เช็ค Flag เพื่อป้องกัน Loop รีเฟรชไม่รู้จบ
+                const isJustChanged = sessionStorage.getItem('mw_skip_pin_for_lang');
+                if (!isJustChanged) {
+                    changeLanguage(STATE.userSettings.language);
+                }
             }
 
             // Update Notify Badge (ถ้ามีค่าส่งมา)
@@ -901,9 +918,11 @@ async function loadUserProfile() {
                 const mainContent = document.getElementById('main-content');
                 if (mainContent) renderHomeContent(mainContent);
             }
+        } else {
+            console.warn("Server returned status:", res.status);
         }
     } catch (e) {
-        console.error("❌ Profile Load Error", e);
+        console.error("❌ Profile Load Critical Error:", e);
     }
 }
 
@@ -4962,5 +4981,6 @@ function getCookie(name) {
 loadGoogleMapsScript();
 loadConfig();
 render();
+
 
 
