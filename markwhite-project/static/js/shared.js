@@ -2,7 +2,7 @@
 // *** SHARED CONFIGURATION & API KEYS ***
 // ==========================================
 
-const CLOUDFLARE_WORKER_URL = "https://markwhite-api.surachet-si.workers.dev";
+// const CLOUDFLARE_WORKER_URL = "https://markwhite-api.surachet-si.workers.dev";
 
 // Google Maps Key
 const GOOGLE_MAPS_API_KEY = "AIzaSyBYTRyiJuhYNYmmjRoCH0fvCUFgkVhpc6Y";
