@@ -4191,7 +4191,18 @@ function renderDetailLoading(c, basicInfo) {
 window.openHistoryDetail = async function(id) {
     if (!STATE.historyList) STATE.historyList = [];
     let basicInfo = STATE.historyList.find(i => i.id == id);
-    if (!basicInfo) basicInfo = { id: id, type_id: 'Loading...', status: 'Loading' };
+
+    // --- แก้ไขตรงนี้: เพิ่ม dynamic_data: {} และ images: [] ---
+    if (!basicInfo) {
+        basicInfo = {
+            id: id,
+            type_id: 'Loading...',
+            status: 'Loading',
+            dynamic_data: {}, // ✅ ใส่ Empty Object กันตาย
+            images: [],
+            created_at: new Date().toISOString()
+        };
+    }
 
     STATE.selectedReport = basicInfo;
     const modal = getDetailModal();
@@ -4273,7 +4284,7 @@ function renderDetailModalContent(c, report) {
 
     // --- แก้ไขจุดนี้: เพิ่มปุ่มดูรายชื่อกลุ่ม ---
     const fieldsHTML = formConfig.fields.map((field, idx) => {
-        const val = report.dynamic_data[field.id];
+        const val = report.dynamic_data ? report.dynamic_data[field.id] : '-';
         let displayVal = val;
         if(Array.isArray(val)) displayVal = val.join(', ');
         if(!val) displayVal = "-";
@@ -4300,7 +4311,7 @@ function renderDetailModalContent(c, report) {
     const imagesHTML = report.images && report.images.length > 0 ? `<div class="mb-6 slide-up" style="animation-delay: 100ms"><label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">${t('evidence_photos')}</label><div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">${report.images.map(img => `<img src="${img}" onclick="viewImage('${img}')" class="w-24 h-24 rounded-xl object-cover shadow-sm border border-white cursor-pointer hover:opacity-90 shrink-0">`).join('')}</div></div>` : '';
 
     let evalResultHTML = '';
-    if(report.dynamic_data.eval_results_report) {
+    if(report.dynamic_data && report.dynamic_data.eval_results_report) {
          let detailsHTML = '';
          const linkedEvals = formConfig ? (formConfig.linked_evals_report || []) : [];
 
@@ -4981,6 +4992,7 @@ function getCookie(name) {
 loadGoogleMapsScript();
 loadConfig();
 render();
+
 
 
 
