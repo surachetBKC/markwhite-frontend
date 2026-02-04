@@ -11,14 +11,13 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyBYTRyiJuhYNYmmjRoCH0fvCUFgkVhpc6Y";
 const VAPID_PUBLIC_KEY = "BCNpvarbRgcqB_Lb4YCHz_G2_6ugFzZA5d9tgxXkBzGeyvFiopKQPWAN8rINW7euFbBvEpPMyWn2skFErFCvLH4";
 
 function getApiBaseUrl() {
-    // ถ้าเรากำหนด URL ไว้ให้ใช้เลย
+    // ถ้ามี URL Worker ให้ใช้เลย
     if (CLOUDFLARE_WORKER_URL) return CLOUDFLARE_WORKER_URL;
-    return '/api';
+    // Fallback
+    return window.location.origin;
 }
 
-// ประกาศตัวแปร API_URL ให้เป็น Global (สำคัญมาก บรรทัดนี้ต้องอยู่ตรงนี้)
 const API_URL = getApiBaseUrl();
-
 console.log("🔗 API Connected to:", API_URL);
 
 // *** LANGUAGE SETTINGS ***
@@ -231,6 +230,7 @@ window.changeLanguage = function(lang) {
     }
 
 })();
+
 
 
 
