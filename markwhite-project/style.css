@@ -1,0 +1,358 @@
+/* =========================================
+   1. CORE LAYOUT & ANIMATIONS
+   ========================================= */
+html, body {
+    height: 100dvh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #F0F9FF;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Sarabun', 'Noto Sans JP', 'Noto Sans Myanmar', sans-serif;
+    overscroll-behavior: none;
+
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    min-height: 100vh;
+}
+
+/* Animations */
+.slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+.fade-in { animation: fadeIn 0.4s ease-out forwards; }
+.slide-in-right { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-spin-slow { animation: spin-slow 3s linear infinite; }
+
+@keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Background Gradient Blobs */
+.bg-blob-1 { position: absolute; top: -10%; right: -10%; width: 300px; height: 300px; background: linear-gradient(135deg, #60A5FA, #34D399); border-radius: 50%; filter: blur(60px); opacity: 0.6; z-index: -1; animation: float 10s infinite ease-in-out; }
+.bg-blob-2 { position: absolute; bottom: -5%; left: -10%; width: 250px; height: 250px; background: linear-gradient(135deg, #2DD4BF, #3B82F6); border-radius: 50%; filter: blur(50px); opacity: 0.6; z-index: -1; animation: float 12s infinite ease-in-out reverse; }
+@keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(10px, 20px); } }
+
+/* =========================================
+   2. COMPONENTS (Glass, Header, Inputs)
+   ========================================= */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+}
+.glass-input { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; pointer-events: none; color: #ef4444; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8)); }
+
+.custom-checkbox:checked + div { background-color: #eff6ff; border-color: #3b82f6; color: #1d4ed8; }
+.custom-checkbox:checked + div .check-icon { opacity: 1; transform: scale(1); }
+
+button:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(80%); }
+
+.lang-btn { transition: all 0.2s ease; overflow: hidden; position: relative; }
+.lang-btn img { width: 100%; height: 100%; object-fit: cover; }
+.lang-btn.active { transform: scale(1.15); border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); z-index: 10; }
+.lang-btn:hover { transform: scale(1.1); }
+
+#loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; }
+
+/* Header Transitions */
+#main-header { transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1); }
+#welcome-section {
+    overflow: hidden; max-height: 200px; opacity: 1; transform: translateY(0);
+    transition: max-height 0.5s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.4s 0.1s ease-out, transform 0.4s 0.1s ease-out;
+}
+.header-collapsed { border-radius: 0 0 1.5rem 1.5rem; padding-bottom: 1rem; }
+.header-collapsed #welcome-section { max-height: 0; opacity: 0; transform: translateY(-10px); margin-top: 0; transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease-in, transform 0.2s ease-in; }
+
+#main-scroll-area { height: 100%; overflow-y: auto; scroll-behavior: smooth; }
+
+/* Navigation Curve */
+.nav-center-curve {
+    position: absolute;
+    bottom: 0.8rem;
+    left: 1rem; right: 1rem; height: 4.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 5rem;
+    display: flex; justify-content: space-between; align-items: center; padding: 0 0.5rem; z-index: 50;
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+    -webkit-mask: radial-gradient(circle 60px at 50% 0%, transparent 98%, black 100%);
+    mask: radial-gradient(circle 50px at 50% 0%, transparent 98%, black 100%);
+    transition: bottom 0.3s ease;
+}
+.floating-btn-wrapper {
+    position: absolute;
+    bottom: 0.8rem;
+    left: 50%; transform: translateX(-50%); width: 4.5rem; height: 4.5rem; z-index: 60;
+    border-radius: 50%; padding: 4px; filter: drop-shadow(0 -2px 10px rgba(0,0,0,0.1));
+    transition: bottom 0.3s ease;
+}
+
+/* Evaluation Specific Styles */
+.eval-card-nested { border-left: 3px solid #cbd5e1; padding-left: 1rem; margin-left: 0.5rem; }
+.range-track { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #e2e8f0; outline: none; }
+.range-track::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #3b82f6; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+/* Custom Color Input */
+.custom-color-input {
+    -webkit-appearance: none; border: none; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; padding: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 2px solid white; outline: 2px solid #e2e8f0;
+}
+.custom-color-input::-webkit-color-swatch-wrapper { padding: 0; }
+.custom-color-input::-webkit-color-swatch { border: none; }
+.draggable-tag { touch-action: none; }
+.draggable-tag:active { cursor: grabbing; opacity: 0.6; transform: scale(0.95); }
+
+/* =========================================
+   3. HOME WIDGETS (Manual Sort Version)
+   ========================================= */
+
+/* พื้นที่ Widget */
+.home-widget {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Edit Mode: ย่อส่วนลงนิดหน่อยเพื่อให้ดูจัดการง่าย */
+.editing-mode .home-widget {
+    transform: scale(0.98);
+    border: 1px dashed #cbd5e1;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+}
+
+/* กล่องปุ่มควบคุม (Capsule) */
+.widget-controls {
+    position: absolute;
+    top: -14px;
+    right: 8px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 99px;
+    padding: 4px 6px;
+    display: none; /* ซ่อนปกติ */
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    z-index: 20;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.2s ease;
+}
+
+.editing-mode .widget-controls {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ปุ่มกด (Up/Down/Hide) */
+.ctrl-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.15s;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.ctrl-btn:hover {
+    background-color: #f1f5f9;
+    color: #3b82f6;
+    border-color: #e2e8f0;
+}
+
+.ctrl-btn:active {
+    transform: scale(0.9);
+    background-color: #e2e8f0;
+}
+
+/* ปุ่มลบ (สีแดง) */
+.ctrl-btn.btn-hide:hover {
+    color: #ef4444;
+    background-color: #fef2f2;
+    border-color: #fecaca;
+}
+
+/* เส้นคั่น */
+.ctrl-divider {
+    width: 1px;
+    height: 16px;
+    background-color: #e2e8f0;
+    margin: 0 2px;
+}
+
+/* ซ่อนเนื้อหาบางส่วนตอน Edit (optional) */
+.editing-mode .widget-content-area {
+    pointer-events: none; /* ป้องกันการกดปุ่มข้างใน widget ตอนจัดหน้า */
+    opacity: 0.7;
+    filter: grayscale(0.2);
+}
+
+/* =========================================
+   MODERN MAP INFO WINDOW
+   ========================================= */
+
+/* ล้าง Padding และ Background เดิมของ Google */
+.gm-style .gm-style-iw-c {
+    padding: 0 !important;
+    background: transparent !important; /* พื้นหลังใส เพื่อให้เราทำ Card เอง */
+    box-shadow: none !important; /* ลบเงาเดิม */
+    border-radius: 0 !important;
+}
+
+/* ลบปุ่ม X เดิม */
+.gm-ui-hover-effect {
+    display: none !important;
+}
+
+/* ลบลูกศรชี้ลง (Triangle) เพื่อให้ Card ลอยสวยๆ */
+.gm-style .gm-style-iw-t::after {
+    display: none !important;
+}
+
+/* จัดการ Scrollbar */
+.gm-style .gm-style-iw-d {
+    overflow: hidden !important;
+    padding: 0 !important;
+    max-height: none !important;
+}
+
+/* ลบกรอบสีส้ม (Focus Outline) เวลาคลิก */
+.gm-style-iw,
+.gm-style-iw:focus,
+.gm-style-iw div,
+.gm-style-iw div:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* =========================================
+   ADDITION FOR FACE SCAN UX
+   ========================================= */
+
+/* เอฟเฟกต์หายใจ (Pulse) สำหรับไอคอนสแกนหน้า */
+@keyframes scanPulse {
+    0% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+    100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+.face-scan-active {
+    animation: scanPulse 2s infinite;
+    color: #3b82f6; /* brand-500 */
+    border-color: #3b82f6;
+}
+
+/* เอฟเฟกต์ตอนสแกนผ่านแล้วจุด PIN วิ่งเต็ม */
+.pin-dot-filled {
+    background-color: #3b82f6 !important;
+    transform: scale(1.2);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pin-shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* =========================================
+   4. PROFILE & SETTINGS UI (NEW)
+   ========================================= */
+
+/* iOS-Style Toggle Switch */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #3b82f6;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #3b82f6;
+}
+.toggle-switch-handle {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.peer:checked ~ div .toggle-switch-handle {
+    transform: translateX(100%);
+    border-color: white;
+}
+.peer:checked ~ div {
+    background-color: #3b82f6; /* Brand Blue */
+}
+
+/* Profile Avatar Glow */
+.avatar-ring {
+    background: conic-gradient(from 0deg, #3b82f6, #06b6d4, #3b82f6);
+    padding: 3px;
+    border-radius: 50%;
+    animation: spin-slow 10s linear infinite;
+}
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Menu Item Hover Effect */
+.menu-item-hover {
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.menu-item-hover:active {
+    transform: scale(0.97);
+    background-color: #f8fafc;
+}
+
+/* --- ซ่อน Google Translate Bar --- */
+body {
+    top: 0 !important;
+}
+.goog-te-banner-frame {
+    display: none !important;
+}
+.goog-te-balloon-frame {
+    display: none !important;
+}
+/* ป้องกันการขยับของ layout */
+.skiptranslate {
+    display: none !important;
+}
+/* ปรับแต่ง Popup ให้ดูดีขึ้น (ถ้าจำเป็น) */
+#goog-gt-tt {
+    display: none !important;
+}
+
+/* เพิ่มต่อท้ายไฟล์ style.css */
+
+/* ป้องกัน Browser แทรกแซงการสัมผัสบนแผนที่ */
+#mini-map,
+#detail-map,
+#detail-map-modal,
+#full-google-map,
+#google-map-picker,
+.gm-style,
+.gm-style > div {
+    touch-action: none !important;
+    /* touch-action: none บอก Browser ว่าไม่ต้องจัดการ Scroll/Zoom ตรงนี้ เดี๋ยว JS จัดการเอง */
+}
