@@ -28,7 +28,7 @@ function getEmployeeImgHtml(empCode, name, sizeClass = "w-10 h-10", textClass = 
         if (savedUser) {
             const userObj = JSON.parse(savedUser);
             if (userObj && userObj.userid) {
-                STATE.user = userObj;
+                STATE.user = userObj; // <--- จุดสำคัญ: User ถูกโหลดเข้า State แล้ว
 
                 // เช็คว่าเคยผ่านการสแกนหรือใส่ PIN มาหรือยังใน Session นี้
                 const isSessionUnlocked = sessionStorage.getItem('mw_session_unlocked') === 'true';
@@ -49,6 +49,10 @@ function getEmployeeImgHtml(empCode, name, sizeClass = "w-10 h-10", textClass = 
                         if(typeof authenticateBiometrics === 'function') authenticateBiometrics();
                     }, 500);
                 }
+
+                // ✅ [เพิ่มตรงนี้] เรียกเช็ค Deep Link หลังจากโหลด User เสร็จแล้ว
+                // วางไว้ตรงนี้เพื่อให้แน่ใจว่า STATE.user มีค่าแล้ว ก่อนที่ checkDeepLink จะทำงาน
+                setTimeout(window.checkDeepLink, 500);
             }
         }
     } catch (e) {
@@ -4958,4 +4962,5 @@ function getCookie(name) {
 loadGoogleMapsScript();
 loadConfig();
 render();
+
 
