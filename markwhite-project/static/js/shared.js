@@ -2,15 +2,14 @@
 // *** SHARED CONFIGURATION & API KEYS ***
 // ==========================================
 
+const API_BASE_URL = "markwhite-api.surachet-si.workers.dev";
+console.log("🔗 API Connected to:", API_URL);
+
 // Google Maps Key
 const GOOGLE_MAPS_API_KEY = "AIzaSyBYTRyiJuhYNYmmjRoCH0fvCUFgkVhpc6Y";
 
 // VAPID Public Key for Web Push
 const VAPID_PUBLIC_KEY = "BCNpvarbRgcqB_Lb4YCHz_G2_6ugFzZA5d9tgxXkBzGeyvFiopKQPWAN8rINW7euFbBvEpPMyWn2skFErFCvLH4";
-
-function getApiBaseUrl() { return '/api'; }
-const API_BASE_URL = "markwhite-api.surachet-si.workers.dev";
-console.log("🔗 API Connected to:", API_URL);
 
 // *** LANGUAGE SETTINGS ***
 const LANGUAGES = {
@@ -222,4 +221,5 @@ window.changeLanguage = function(lang) {
     }
 
 })();
+
 
