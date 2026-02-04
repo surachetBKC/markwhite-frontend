@@ -2,14 +2,26 @@
 // *** SHARED CONFIGURATION & API KEYS ***
 // ==========================================
 
-const API_URL = "markwhite-api.surachet-si.workers.dev";
-console.log("🔗 API Connected to:", API_URL);
+const CLOUDFLARE_WORKER_URL = "markwhite-api.surachet-si.workers.dev";
 
 // Google Maps Key
 const GOOGLE_MAPS_API_KEY = "AIzaSyBYTRyiJuhYNYmmjRoCH0fvCUFgkVhpc6Y";
 
 // VAPID Public Key for Web Push
 const VAPID_PUBLIC_KEY = "BCNpvarbRgcqB_Lb4YCHz_G2_6ugFzZA5d9tgxXkBzGeyvFiopKQPWAN8rINW7euFbBvEpPMyWn2skFErFCvLH4";
+
+function getApiBaseUrl() {
+    // ถ้ามี URL จาก Cloudflare ให้ใช้
+    if (CLOUDFLARE_WORKER_URL) return CLOUDFLARE_WORKER_URL;
+    
+    // Fallback: ถ้าไม่มีให้ใช้ path ปัจจุบัน (กรณีรัน local)
+    return window.location.origin; 
+}
+
+// ประกาศตัวแปร API_URL ให้เป็น Global (สำคัญมาก บรรทัดนี้ต้องอยู่ตรงนี้)
+const API_URL = getApiBaseUrl();
+
+console.log("🔗 API Connected to:", API_URL);
 
 // *** LANGUAGE SETTINGS ***
 const LANGUAGES = {
@@ -221,6 +233,7 @@ window.changeLanguage = function(lang) {
     }
 
 })();
+
 
 
 
