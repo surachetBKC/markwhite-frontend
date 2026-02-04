@@ -10,13 +10,7 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyBYTRyiJuhYNYmmjRoCH0fvCUFgkVhpc6Y";
 // VAPID Public Key for Web Push
 const VAPID_PUBLIC_KEY = "BCNpvarbRgcqB_Lb4YCHz_G2_6ugFzZA5d9tgxXkBzGeyvFiopKQPWAN8rINW7euFbBvEpPMyWn2skFErFCvLH4";
 
-function getApiBaseUrl() {
-    // ถ้ามี URL Worker ให้ใช้เลย
-    if (CLOUDFLARE_WORKER_URL) return CLOUDFLARE_WORKER_URL;
-    // Fallback
-    return window.location.origin;
-}
-
+function getApiBaseUrl() { return '/api'; }
 const API_URL = getApiBaseUrl();
 console.log("🔗 API Connected to:", API_URL);
 
@@ -230,6 +224,7 @@ window.changeLanguage = function(lang) {
     }
 
 })();
+
 
 
 
